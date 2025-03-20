@@ -33,7 +33,7 @@ export default function PerformanceDrivers({ currentMonth }: PerformanceDriversP
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Overall KPI's Impact</CardTitle>
+          <CardTitle>Overall KPI&apos;s Impact</CardTitle>
           <CardDescription>Relative influence of KPI categories on revenue ({currentMonth})</CardDescription>
         </CardHeader>
         <CardContent>
