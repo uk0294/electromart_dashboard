@@ -1,4 +1,3 @@
-// components/dashboard/performance-drivers.tsx - Performance Drivers tab content
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, LineChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, Line, ResponsiveContainer, Cell } from 'recharts';
 
@@ -20,9 +19,15 @@ interface PerformanceDriversProps {
   currentMonth: string;
 }
 
+// Define specific types for the props inside the chart
+interface NpsData {
+  month: string;
+  score: number;
+}
+
 export default function PerformanceDrivers({ currentMonth }: PerformanceDriversProps) {
-  // Filter data for the current month
-  const currentMonthNps = npsData.find(item => item.month === currentMonth) || npsData[npsData.length - 1];
+  // Remove unused 'currentMonthNps' variable
+  // const currentMonthNps = npsData.find(item => item.month === currentMonth) || npsData[npsData.length - 1];
   
   return (
     <div className="space-y-6">
@@ -108,7 +113,7 @@ export default function PerformanceDrivers({ currentMonth }: PerformanceDriversP
                   dataKey="score" 
                   stroke="#82ca9d" 
                   name="NPS Score"
-                  dot={(props: any) => {
+                  dot={(props: { cx: number; cy: number; payload: NpsData }) => {
                     const { cx, cy, payload } = props;
                     // Make the current month's dot larger and highlighted
                     return payload.month === currentMonth ? (

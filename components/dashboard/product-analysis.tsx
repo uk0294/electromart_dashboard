@@ -25,7 +25,7 @@ export default function ProductAnalysis({ currentMonth }: ProductAnalysisProps) 
               <XAxis dataKey="name" />
               <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
               <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
-              <Tooltip formatter={(value: any, name: any) => {
+              <Tooltip formatter={(value: number, name: string) => {
                 if (name === "Growth") return `${value}%`;
                 return formatCurrency(value);
               }} />

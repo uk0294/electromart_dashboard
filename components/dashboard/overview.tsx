@@ -1,4 +1,3 @@
-// components/dashboard/overview.tsx - Overview tab content with month filtering
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
@@ -15,7 +14,6 @@ import {
 } from '@/lib/data';
 import { formatCurrency } from '@/lib/utils';
 
-// Define props interface
 interface OverviewProps {
   currentMonth: string;
   currentMonthData: {
@@ -26,20 +24,11 @@ interface OverviewProps {
 }
 
 export default function Overview({ currentMonth, currentMonthData }: OverviewProps) {
-  // Filter data for the current month
   const currentMonthNps = npsData.find(item => item.month === currentMonth) || npsData[npsData.length - 1];
-  
-  // Get monthly data for display
   const monthlyRevenue = currentMonthData.revenue;
   const monthlyTarget = currentMonthData.target;
-  
-  // Calculate monthly ROI (simplified for demo)
   const monthlyROI = parseFloat((avgROI * (monthlyRevenue / (totalRevenue / 12))).toFixed(2));
-  
-  // Estimated monthly spend (simplified for demo)
   const monthlySpend = Math.round(totalMarketingSpend / 12);
-  
-  // Highlight the current month in the chart
   const highlightedRevenueData = revenueByMonth.map(item => ({
     ...item,
     isCurrentMonth: item.name === currentMonth
@@ -47,7 +36,7 @@ export default function Overview({ currentMonth, currentMonthData }: OverviewPro
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 md:gwhen deploying the code on vercal it gave this rid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium">Revenue ({currentMonth})</CardTitle>
@@ -102,7 +91,7 @@ export default function Overview({ currentMonth, currentMonthData }: OverviewPro
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
                 <YAxis />
-                <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                <Tooltip formatter={(value: number) => formatCurrency(value)} />
                 <Legend />
                 <Line
                   type="monotone"
@@ -110,9 +99,8 @@ export default function Overview({ currentMonth, currentMonthData }: OverviewPro
                   stroke="#8884d8"
                   name="Revenue"
                   strokeWidth={2}
-                  dot={(props: any) => {
+                  dot={(props: { cx: number; cy: number; payload: { isCurrentMonth: boolean } }) => {
                     const { cx, cy, payload } = props;
-                    // Make the current month's dot larger and highlighted
                     return payload.isCurrentMonth ? (
                       <circle 
                         cx={cx} 
@@ -155,13 +143,13 @@ export default function Overview({ currentMonth, currentMonthData }: OverviewPro
                   fill="#8884d8"
                   dataKey="spend"
                   nameKey="name"
-                  label={({name, percent}: any) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }: { name: string; percent: number }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                 >
                   {marketingSpendByChannel.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip formatter={(value: any) => formatCurrency(value)} />
+                <Tooltip formatter={(value: number) => formatCurrency(value)} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>

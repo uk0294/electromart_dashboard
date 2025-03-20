@@ -101,7 +101,7 @@ export default function BudgetOptimization({ currentMonth }: BudgetOptimizationP
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip formatter={(value: any) => formatCurrency(value)} />
+              <Tooltip formatter={(value: number) => formatCurrency(value)} />
               <Legend />
               <Bar dataKey="current" fill="#8884d8" name="Current Budget" />
               <Bar dataKey="recommended" fill="#82ca9d" name="Recommended Budget" />

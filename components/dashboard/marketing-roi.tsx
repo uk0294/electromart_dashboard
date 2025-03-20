@@ -24,7 +24,7 @@ export default function MarketingROI({ currentMonth }: MarketingROIProps) {
               <XAxis dataKey="name" />
               <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
               <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
-              <Tooltip formatter={(value: any, name: any) => name === "ROI" ? `${value}x` : formatCurrency(value)} />
+              <Tooltip formatter={(value: number, name: string) => name === "ROI" ? `${value}x` : formatCurrency(value)} />
               <Legend />
               <Bar yAxisId="left" dataKey="spend" fill="#8884d8" name="Marketing Spend" />
               <Bar yAxisId="right" dataKey="roi" fill="#82ca9d" name="ROI" />
