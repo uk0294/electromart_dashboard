@@ -1,30 +1,63 @@
-// components/dashboard/electromart-dashboard.tsx - Main dashboard container
+// components/dashboard/electromart-dashboard.tsx - Main dashboard container with dynamic header
 "use client"
-// components/dashboard/electromart-dashboard.tsx - Main dashboard container with month navigation
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react';
 
 import Overview from './overview';
-import PerformanceDrivers from './performance-drivers';
-import MarketingROI from './marketing-roi';
+import PerformanceDrivers from './performance-drivers';  // Using the enhanced version
 import BudgetOptimization from './budget-optimization';
 import ProductAnalysis from './product-analysis';
 import ChatBot from './chatbot';
 
-import { revenueByMonth } from '@/lib/data';
+// Import the enhanced revenue data instead of revenueByMonth
+import { enhancedRevenueData } from '@/lib/data/overview';
+import { rawMonthlyData } from '@/lib/data/common';
+
+// Define the type for revenue item
+interface RevenueItem {
+  name: string;
+  revenue: number;
+  total_orders: number;
+  average_order_value: number;
+  isCurrentMonth?: boolean;
+}
 
 export default function ElectroMartDashboard() {
   const [tabValue, setTabValue] = useState("overview");
   
   // Month navigation state
-  const months = ['Jul 23', 'Aug 23', 'Sep 23', 'Oct 23', 'Nov 23', 'Dec 23', 'Jan 24', 'Feb 24', 'Mar 24', 'Apr 24', 'May 24', 'Jun 24'];
-  const [currentMonthIndex, setCurrentMonthIndex] = useState(months.length - 1); // Start with the latest month (June 2024)
-  const [currentMonth, setCurrentMonth] = useState(months[months.length - 1]);
+  // Wrap months array in useMemo to fix exhaustive-deps warning
+  const months = useMemo(() => [
+    'Jul 23', 'Aug 23', 'Sep 23', 'Oct 23', 'Nov 23', 'Dec 23',
+    'Jan 24', 'Feb 24', 'Mar 24', 'Apr 24', 'May 24', 'Jun 24'
+  ], []);
+  
+  const [currentMonthIndex, setCurrentMonthIndex] = useState(1); // Start with August 2023
+  const [currentMonth, setCurrentMonth] = useState(months[1]);
+  
+  // Calculate dynamic data period based on current month
+  const getDynamicDataPeriod = () => {
+    // If we're at the start of the range, show from current month to end
+    if (currentMonthIndex === 0) {
+      return `${months[0]} - June 2024`;
+    }
+    // If we're at the end of the range, show from start to current month
+    else if (currentMonthIndex === months.length - 1) {
+      return `July 2023 - ${months[months.length - 1]}`;
+    }
+    // Otherwise, you might want to show a relevant range based on current month
+    // For example, show 3 months before and after, or full year, etc.
+    // For now, keeping the full year range
+    return "July 2023 - June 2024";
+  };
+  
+  const [dataPeriod, setDataPeriod] = useState(getDynamicDataPeriod());
   
   // Update current month when index changes
   useEffect(() => {
     setCurrentMonth(months[currentMonthIndex]);
+    setDataPeriod(getDynamicDataPeriod());
   }, [currentMonthIndex, months]);
   
   // Navigation functions
@@ -42,43 +75,50 @@ export default function ElectroMartDashboard() {
   
   // Filter data for the current month
   const getCurrentMonthData = () => {
-    return revenueByMonth.find(item => item.name === currentMonth) || revenueByMonth[revenueByMonth.length - 1];
+    return enhancedRevenueData.find((item: RevenueItem) => item.name === currentMonth) || enhancedRevenueData[currentMonthIndex];
   };
   
   const currentMonthData = getCurrentMonthData();
 
   return (
     <div className="flex min-h-screen flex-col bg-slate-50">
-      <header className="sticky top-0 z-10 bg-white border-b">
+      <header className="sticky top-0 z-10 bg-white border-b shadow-sm">
         <div className="flex h-16 items-center px-6">
-          <h1 className="text-2xl font-bold text-blue-800">ElectroMart Marketing Analytics</h1>
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-blue-800">ElectroMart Analytics</h1>
+            <div className="hidden md:flex ml-6 bg-blue-50 px-3 py-1 rounded-full text-blue-600 text-sm font-medium items-center">
+              <span className="mr-1">Dashboard</span>
+            </div>
+          </div>
+
           <div className="ml-auto flex items-center space-x-4">
             <div className="flex items-center">
               <button 
                 onClick={goToPreviousMonth}
                 disabled={currentMonthIndex === 0}
-                className={`p-1 rounded-md ${currentMonthIndex === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}`}
+                className={`p-2 rounded-md ${currentMonthIndex === 0 ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}`}
                 aria-label="Previous month"
               >
                 <ChevronLeft size={20} />
               </button>
               
-              <span className="mx-2 px-3 py-1 font-medium bg-blue-50 rounded-md">
-                {currentMonth}
-              </span>
+              <div className="mx-2 px-4 py-2 font-medium bg-blue-50 rounded-lg border border-blue-100 text-blue-700 flex items-center shadow-sm">
+                <Calendar size={16} className="mr-2" />
+                <span>{currentMonth}</span>
+              </div>
               
               <button 
                 onClick={goToNextMonth}
                 disabled={currentMonthIndex === months.length - 1}
-                className={`p-1 rounded-md ${currentMonthIndex === months.length - 1 ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}`}
+                className={`p-2 rounded-md ${currentMonthIndex === months.length - 1 ? 'text-gray-300 cursor-not-allowed' : 'text-blue-600 hover:bg-blue-100'}`}
                 aria-label="Next month"
               >
                 <ChevronRight size={20} />
               </button>
             </div>
             
-            <div className="text-sm text-gray-600">
-              Data period: July 2023 - June 2024
+            <div className="text-sm bg-gray-100 px-4 py-2 rounded-lg text-gray-700 font-medium shadow-sm border border-gray-200">
+              Data period: {dataPeriod}
             </div>
           </div>
         </div>
@@ -86,12 +126,31 @@ export default function ElectroMartDashboard() {
 
       <main className="flex-1 p-6">
         <Tabs value={tabValue} onValueChange={setTabValue} className="space-y-6">
-          <TabsList className="bg-slate-200">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="performance-drivers">Performance Drivers</TabsTrigger>
-            <TabsTrigger value="marketing-roi">Marketing ROI</TabsTrigger>
-            <TabsTrigger value="budget-optimization">Budget Optimization</TabsTrigger>
-            <TabsTrigger value="product-analysis">Product Analysis</TabsTrigger>
+          <TabsList className="bg-slate-200 p-1 rounded-lg shadow-sm">
+            <TabsTrigger 
+              value="overview" 
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4 py-2 transition-all"
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="performance-drivers" 
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4 py-2 transition-all"
+            >
+              Performance Drivers
+            </TabsTrigger>
+            <TabsTrigger 
+              value="budget-optimization" 
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4 py-2 transition-all"
+            >
+              Budget Optimization
+            </TabsTrigger>
+            <TabsTrigger 
+              value="product-analysis" 
+              className="data-[state=active]:bg-white data-[state=active]:shadow-sm rounded-md px-4 py-2 transition-all"
+            >
+              Product Analysis
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -105,12 +164,8 @@ export default function ElectroMartDashboard() {
             <PerformanceDrivers currentMonth={currentMonth} />
           </TabsContent>
 
-          <TabsContent value="marketing-roi">
-            <MarketingROI currentMonth={currentMonth} />
-          </TabsContent>
-
           <TabsContent value="budget-optimization">
-            <BudgetOptimization currentMonth={currentMonth} />
+            <BudgetOptimization />
           </TabsContent>
 
           <TabsContent value="product-analysis">
@@ -119,9 +174,9 @@ export default function ElectroMartDashboard() {
         </Tabs>
       </main>
 
-      <footer className="border-t py-4 px-6">
+      <footer className="border-t py-4 px-6 bg-white shadow-inner">
         <div className="text-center text-sm text-gray-500">
-          ElectroMart Marketing Analytics Dashboard • Current view: {currentMonth}
+          ElectroMart Analytics Dashboard • Current view: {currentMonth}
         </div>
       </footer>
 

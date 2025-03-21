@@ -2,7 +2,9 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
-import { marketingSpendByChannel } from '@/lib/data';
+
+// Updated imports - use specific data files
+import { marketingSpendByChannel, channelTimeImpact } from '@/lib/data/marketing-roi';
 
 // Define interface for component props
 interface MarketingROIProps {
