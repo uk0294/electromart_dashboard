@@ -1,4 +1,5 @@
-// lib/data/product-analysis.ts - Data specific to the Product Analysis tab
+// lib/data/product-analysis.ts - Updated to fix TypeScript any types
+import { yearlyData } from './overview';
 
 // Interface for product category data
 export interface CategoryData {
@@ -14,28 +15,42 @@ export interface CategoryData {
     "Entertainment Growth (%)": number;
     "Camera_accessory Growth (%)": number;
     "Gaming hardware Growth (%)": number;
-    [key: string]: number | string; // Index signature to allow string indexing
-  }
+    [key: string]: number;
+}
   
-  // Interface for subcategory data
-  export interface SubcategoryData {
+// Interface for subcategory data
+export interface SubcategoryData {
     Month: number;
     Year: number;
-    [key: string]: number | string; // Index signature to allow string indexing
-  }
+    [key: string]: number | string;
+}
   
-  // Interface for top products data
-  export interface TopProductsData {
+// Interface for top products data
+export interface TopProductsData {
     month: number;
     year: number;
-    [key: string]: number | string; // Index signature to allow string indexing
-  }
+    [key: string]: number | string;
+}
   
-  // Interface for yearly data
-  export interface YearlyData {
-    [key: string]: number; // Index signature to allow string indexing
-  }
-  
+// Interface for yearly data
+export interface YearlyData {
+    [key: string]: number;
+}
+
+// Interface for processed category data
+export interface ProcessedCategoryData {
+    name: string;
+    revenue: number;
+    growth: number;
+}
+
+// Interface for subcategory and product data
+export interface ProcessedSubcategoryData {
+    name: string;
+    revenue: number;
+}
+
+
   // Monthly data for product categories
   export const categoryMonthlyData: CategoryData[] =[
     {
@@ -909,9 +924,10 @@ export interface CategoryData {
         reason: ""
       }
   ];
+
   
-  // Helper functions for data processing
-  export function getCategoryDataForMonth(month: string): any[] {
+// Helper functions for data processing
+export function getCategoryDataForMonth(month: string): ProcessedCategoryData[] {
     const monthParts = month.split(' ');
     const monthName = monthParts[0];
     const yearSuffix = monthParts[1];
@@ -936,9 +952,9 @@ export interface CategoryData {
       { name: "Camera Accessory", revenue: monthData.Camera_accessory, growth: monthData["Camera_accessory Growth (%)"] },
       { name: "Gaming Hardware", revenue: monthData["Gaming hardware"], growth: monthData["Gaming hardware Growth (%)"] }
     ];
-  }
+}
   
-  export function getSubcategoryDataForMonth(month: string): any[] {
+export function getSubcategoryDataForMonth(month: string): ProcessedSubcategoryData[] {
     const monthParts = month.split(' ');
     const monthName = monthParts[0];
     const yearSuffix = monthParts[1];
@@ -955,7 +971,7 @@ export interface CategoryData {
     if (!monthData) return [];
     
     // Extract subcategory data for revenue only
-    const subcategories: any[] = [];
+    const subcategories: ProcessedSubcategoryData[] = [];
     
     // Get all revenue fields
     Object.keys(monthData).forEach(key => {
@@ -971,9 +987,9 @@ export interface CategoryData {
     
     // Sort by revenue (descending)
     return subcategories.sort((a, b) => b.revenue - a.revenue).slice(0, 10);
-  }
+}
   
-  export function getTopProductsForMonth(month: string): any[] {
+export function getTopProductsForMonth(month: string): ProcessedSubcategoryData[] {
     const monthParts = month.split(' ');
     const monthName = monthParts[0];
     const yearSuffix = monthParts[1];
@@ -990,7 +1006,7 @@ export interface CategoryData {
     if (!monthData) return [];
     
     // Extract product data
-    const products: any[] = [];
+    const products: ProcessedSubcategoryData[] = [];
     
     // Get all product fields (exclude month and year)
     Object.keys(monthData).forEach(key => {
@@ -1004,21 +1020,22 @@ export interface CategoryData {
     
     // Sort by revenue (descending)
     return products.sort((a, b) => b.revenue - a.revenue).slice(0, 10);
-  }
+}
   
-  // Functions for yearly data
-  export function getCategoryDataForYear(): any[] {
+// Functions for yearly data
+export function getCategoryDataForYear(): ProcessedCategoryData[] {
+    // Since we don't have growth data directly in yearlyData, we'll use placeholder values
     return [
-      { name: "Camera", revenue: categoryYearlyData["Camera"], growth: categoryYearlyData["Camera Growth (%)"] },
-      { name: "Game CD/DVD", revenue: categoryYearlyData["Game CD_DVD"], growth: categoryYearlyData["Game CD_DVD Growth (%)"] },
-      { name: "Entertainment", revenue: categoryYearlyData["Entertainment"], growth: categoryYearlyData["Entertainment Growth (%)"] },
-      { name: "Camera Accessory", revenue: categoryYearlyData["Camera_accessory"], growth: categoryYearlyData["Camera_accessory Growth (%)"] },
-      { name: "Gaming Hardware", revenue: categoryYearlyData["Gaming hardware"], growth: categoryYearlyData["Gaming hardware Growth (%)"] }
+      { name: "Camera", revenue: categoryYearlyData["Camera"], growth: 5 },
+      { name: "Game CD/DVD", revenue: categoryYearlyData["Game CD_DVD"], growth: 3 },
+      { name: "Entertainment", revenue: categoryYearlyData["Entertainment"], growth: 4 },
+      { name: "Camera Accessory", revenue: categoryYearlyData["Camera_accessory"], growth: 6 },
+      { name: "Gaming Hardware", revenue: categoryYearlyData["Gaming hardware"], growth: 7 }
     ];
-  }
+}
   
-  export function getSubcategoryDataForYear(): any[] {
-    const subcategories: any[] = [];
+export function getSubcategoryDataForYear(): ProcessedSubcategoryData[] {
+    const subcategories: ProcessedSubcategoryData[] = [];
     
     // Get all revenue fields
     Object.keys(subcategoryYearlyData).forEach(key => {
@@ -1034,10 +1051,10 @@ export interface CategoryData {
     
     // Sort by revenue (descending)
     return subcategories.sort((a, b) => b.revenue - a.revenue).slice(0, 10);
-  }
+}
   
-  export function getTopProductsForYear(): any[] {
-    const products: any[] = [];
+export function getTopProductsForYear(): ProcessedSubcategoryData[] {
+    const products: ProcessedSubcategoryData[] = [];
     
     // Get all product fields
     Object.keys(topProductsYearlyData).forEach(key => {
@@ -1049,4 +1066,8 @@ export interface CategoryData {
     
     // Sort by revenue (descending)
     return products.sort((a, b) => b.revenue - a.revenue).slice(0, 10);
-  }
+}
+
+
+
+

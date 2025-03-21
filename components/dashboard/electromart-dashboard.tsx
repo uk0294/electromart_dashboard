@@ -1,4 +1,4 @@
-// components/dashboard/electromart-dashboard.tsx - Main dashboard container with dynamic header
+// components/dashboard/electromart-dashboard.tsx - Fixed unused imports and hook dependencies
 "use client"
 import { useState, useEffect, useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -8,11 +8,10 @@ import Overview from './overview';
 import PerformanceDrivers from './performance-drivers';  // Using the enhanced version
 import BudgetOptimization from './budget-optimization';
 import ProductAnalysis from './product-analysis';
-import ChatBot from './chatbot';
+import ChatBot from './chatbot';  // Using the enhanced chatbot
 
-// Import the enhanced revenue data instead of revenueByMonth
+// Import the enhanced revenue data
 import { enhancedRevenueData } from '@/lib/data/overview';
-import { rawMonthlyData } from '@/lib/data/common';
 
 // Define the type for revenue item
 interface RevenueItem {
@@ -36,29 +35,25 @@ export default function ElectroMartDashboard() {
   const [currentMonthIndex, setCurrentMonthIndex] = useState(1); // Start with August 2023
   const [currentMonth, setCurrentMonth] = useState(months[1]);
   
-  // Calculate dynamic data period based on current month
-  const getDynamicDataPeriod = () => {
-    // If we're at the start of the range, show from current month to end
-    if (currentMonthIndex === 0) {
-      return `${months[0]} - June 2024`;
-    }
-    // If we're at the end of the range, show from start to current month
-    else if (currentMonthIndex === months.length - 1) {
-      return `July 2023 - ${months[months.length - 1]}`;
-    }
-    // Otherwise, you might want to show a relevant range based on current month
-    // For example, show 3 months before and after, or full year, etc.
-    // For now, keeping the full year range
-    return "July 2023 - June 2024";
-  };
+  // Calculate dynamic data period based on current month - FIXED VERSION
+  const getDynamicDataPeriod = useMemo(() => {
+    return (index: number) => {
+      // Always show a 3-month window centered on the current month (or adjusted at edges)
+      const startIdx = Math.max(0, index - 1);
+      const endIdx = Math.min(months.length - 1, index + 1);
+      
+      return `${months[startIdx]} - ${months[endIdx]}`;
+    };
+  }, [months]);
   
-  const [dataPeriod, setDataPeriod] = useState(getDynamicDataPeriod());
+  const [dataPeriod, setDataPeriod] = useState(() => getDynamicDataPeriod(currentMonthIndex));
   
   // Update current month when index changes
   useEffect(() => {
     setCurrentMonth(months[currentMonthIndex]);
-    setDataPeriod(getDynamicDataPeriod());
-  }, [currentMonthIndex, months]);
+    // Update the data period when month changes
+    setDataPeriod(getDynamicDataPeriod(currentMonthIndex));
+  }, [currentMonthIndex, months, getDynamicDataPeriod]);
   
   // Navigation functions
   const goToPreviousMonth = () => {
@@ -180,7 +175,7 @@ export default function ElectroMartDashboard() {
         </div>
       </footer>
 
-      {/* Add the ChatBot component */}
+      {/* Add the enhanced ChatBot component */}
       <ChatBot />
     </div>
   );

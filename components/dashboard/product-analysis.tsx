@@ -1,4 +1,4 @@
-// components/dashboard/product-analysis.tsx - Enhanced Product Analysis page
+// components/dashboard/product-analysis.tsx - Fixed TypeScript any types
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, Cell, ResponsiveContainer } from 'recharts';
@@ -12,7 +12,6 @@ import {
   getSubcategoryDataForYear,
   getTopProductsForYear,
   topPerformingCategories,
-  topCategoryRevenues,
   recommendedFocusProducts
 } from '@/lib/data/product-analysis';
 
@@ -21,8 +20,23 @@ interface ProductAnalysisProps {
   currentMonth: string;
 }
 
+// Define types for category and tooltip data
+interface CategoryData {
+  name: string;
+  revenue: number;
+  growth: number;
+}
+
+interface CategoryTooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    payload: CategoryData;
+  }>;
+  label?: string;
+}
+
 // Custom tooltip for the category chart
-const CategoryTooltip = ({ active, payload, label }: any) => {
+const CategoryTooltip = ({ active, payload, label }: CategoryTooltipProps) => {
   if (active && payload && payload.length) {
     // Extract the category data
     const data = payload[0].payload;
@@ -42,9 +56,9 @@ const CategoryTooltip = ({ active, payload, label }: any) => {
 
 export default function ProductAnalysis({ currentMonth }: ProductAnalysisProps) {
   const [showYearlyData, setShowYearlyData] = useState(false);
-  const [categoryData, setCategoryData] = useState<any[]>([]);
-  const [subcategoryData, setSubcategoryData] = useState<any[]>([]);
-  const [topProductsData, setTopProductsData] = useState<any[]>([]);
+  const [categoryData, setCategoryData] = useState<CategoryData[]>([]);
+  const [subcategoryData, setSubcategoryData] = useState<{ name: string; revenue: number }[]>([]);
+  const [topProductsData, setTopProductsData] = useState<{ name: string; revenue: number }[]>([]);
   
   // Update data based on month and yearly toggle
   useEffect(() => {
@@ -124,7 +138,7 @@ export default function ProductAnalysis({ currentMonth }: ProductAnalysisProps) 
                 >
                   {categoryData.map((entry, index) => (
                     <Cell 
-                      key={`cell-${index}`} 
+                      key={`cell-growth-${entry.name}-${index}`} 
                       fill={entry.growth >= 0 ? "#82ca9d" : "#ff8042"} 
                     />
                   ))}
@@ -239,18 +253,6 @@ export default function ProductAnalysis({ currentMonth }: ProductAnalysisProps) 
                 </div>
               ))}
             </div>
-            
-            {/* <div className="mt-6 border-t pt-4">
-              <p className="text-gray-800 font-medium mb-3">Top Categories by Revenue</p>
-              <div className="space-y-3">
-                {topCategoryRevenues.map((item, idx) => (
-                  <div key={idx} className="flex justify-between items-center">
-                    <span>{item.name}</span>
-                    <span className="font-medium">{formatCurrency(item.revenue)}</span>
-                  </div>
-                ))}
-              </div>
-            </div> */}
           </CardContent>
         </Card>
 

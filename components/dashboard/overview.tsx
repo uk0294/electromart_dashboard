@@ -1,4 +1,4 @@
-// components/dashboard/overview.tsx - With side-by-side layout
+// components/dashboard/overview.tsx - Fixed unused props
 import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -27,7 +27,7 @@ interface OverviewProps {
   };
 }
 
-export default function Overview({ currentMonth, currentMonthData }: OverviewProps) {
+export default function Overview({ currentMonth }: OverviewProps) {
   const [showYearlyData, setShowYearlyData] = useState(false);
   
   // Find the raw data for the current month

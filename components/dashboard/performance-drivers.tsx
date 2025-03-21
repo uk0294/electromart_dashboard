@@ -19,8 +19,8 @@ interface PerformanceDriversProps {
   currentMonth: string;
 }
 
-// Define specific types for the props inside the chart
-interface NpsData {
+// Define types for the chart data
+interface NpsDataItem {
   month: string;
   score: number;
 }
@@ -277,7 +277,7 @@ export default function PerformanceDrivers({ currentMonth }: PerformanceDriversP
             <CardDescription>Customer satisfaction correlation with revenue</CardDescription>
           </CardHeader>
           <CardContent>
-                          <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width="100%" height={300}>
               <LineChart data={npsData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />

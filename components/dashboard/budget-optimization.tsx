@@ -1,8 +1,8 @@
-// components/dashboard/budget-optimization.tsx - Enhanced Budget Optimization tab content
+// components/dashboard/budget-optimization.tsx - Fixed unused imports and unescaped entities
 import { useState, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Bar, ResponsiveContainer } from 'recharts';
+import { BarChart, XAxis, YAxis, CartesianGrid, Tooltip, Bar, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
 import { 
   calculateBudgetAllocations,
@@ -177,7 +177,7 @@ export default function BudgetOptimization() {
               </div>
               <div className="transition-all duration-500">
                 <p className="text-lg font-bold">{formatCurrency(budgetData.modelRevenue)}</p>
-                <p className="text-sm text-gray-500">Model's Revenue</p>
+                <p className="text-sm text-gray-500">Model&apos;s Revenue</p>
               </div>
               
               <div className="transition-all duration-500">
@@ -190,7 +190,7 @@ export default function BudgetOptimization() {
                 <p className={`text-lg font-bold ${getTextColorClass(budgetData.modelProfitLoss)}`}>
                   {formatPercentage(budgetData.modelProfitLoss)}
                 </p>
-                <p className="text-sm text-gray-500">Model's Profit/Loss</p>
+                <p className="text-sm text-gray-500">Model&apos;s Profit/Loss</p>
               </div>
             </div>
           </CardContent>

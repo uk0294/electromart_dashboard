@@ -1,4 +1,4 @@
-// components/dashboard/revenue-trend.tsx - Simplified with single graph
+// components/dashboard/revenue-trend.tsx - Fixed TypeScript any types
 import { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { formatCurrency } from '@/lib/utils';
@@ -8,8 +8,18 @@ interface RevenueTrendProps {
   currentMonth: string;
 }
 
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    name: string;
+    dataKey: string;
+  }>;
+  label?: string;
+}
+
 // Custom tooltip for Revenue, Orders, and AOV
-const MetricsTooltip = ({ active, payload, label }: any) => {
+const MetricsTooltip = ({ active, payload, label }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-3 border border-gray-200 shadow-md rounded-md">
@@ -47,13 +57,23 @@ export default function RevenueTrend({ currentMonth }: RevenueTrendProps) {
   }, [currentMonth]);
 
   // Custom dot renderer function for metrics chart
-  const renderMetricsDot = (props: any) => {
-    const { cx, cy, payload, dataKey, stroke } = props;
+  const renderMetricsDot = (props: {
+    cx: number;
+    cy: number;
+    index: number;
+    payload: {
+      name: string;
+      isCurrentMonth?: boolean;
+    };
+    stroke: string;
+  }) => {
+    const { cx, cy, payload, stroke, index } = props;
     
     // Make the current month's dot larger and highlighted
     if (payload.isCurrentMonth) {
       return (
         <circle 
+          key={`metrics-dot-${index}`}
           cx={cx} 
           cy={cy} 
           r={6} 
@@ -63,7 +83,7 @@ export default function RevenueTrend({ currentMonth }: RevenueTrendProps) {
         />
       );
     }
-    return <circle cx={cx} cy={cy} r={4} fill={stroke} />;
+    return <circle key={`metrics-dot-${index}`} cx={cx} cy={cy} r={4} fill={stroke} />;
   };
 
   return (
@@ -85,6 +105,7 @@ export default function RevenueTrend({ currentMonth }: RevenueTrendProps) {
           
           {/* Revenue Line */}
           <Line
+            key="revenue-line"
             yAxisId="left"
             type="monotone"
             dataKey="revenue"
@@ -97,6 +118,7 @@ export default function RevenueTrend({ currentMonth }: RevenueTrendProps) {
           
           {/* Orders Line (scaled to fit) */}
           <Line
+            key="orders-line"
             yAxisId="left"
             type="monotone"
             dataKey={(item) => item.total_orders * SCALING_FACTORS.ORDERS}
@@ -108,6 +130,7 @@ export default function RevenueTrend({ currentMonth }: RevenueTrendProps) {
           
           {/* Average Order Value Line (scaled to fit) */}
           <Line
+            key="aov-line"
             yAxisId="left"
             type="monotone"
             dataKey={(item) => item.average_order_value * SCALING_FACTORS.AOV}
