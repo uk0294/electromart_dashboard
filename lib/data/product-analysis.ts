@@ -1,6 +1,4 @@
-// lib/data/product-analysis.ts - Updated to fix TypeScript any types
-import { yearlyData } from './overview';
-
+// lib/data/product-analysis.ts - Removed unused imports
 // Interface for product category data
 export interface CategoryData {
     Month: number;
@@ -49,7 +47,6 @@ export interface ProcessedSubcategoryData {
     name: string;
     revenue: number;
 }
-
 
   // Monthly data for product categories
   export const categoryMonthlyData: CategoryData[] =[
@@ -924,8 +921,7 @@ export interface ProcessedSubcategoryData {
         reason: ""
       }
   ];
-
-  
+ 
 // Helper functions for data processing
 export function getCategoryDataForMonth(month: string): ProcessedCategoryData[] {
     const monthParts = month.split(' ');
@@ -1067,7 +1063,6 @@ export function getTopProductsForYear(): ProcessedSubcategoryData[] {
     // Sort by revenue (descending)
     return products.sort((a, b) => b.revenue - a.revenue).slice(0, 10);
 }
-
 
 
 

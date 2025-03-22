@@ -19,12 +19,6 @@ interface PerformanceDriversProps {
   currentMonth: string;
 }
 
-// Define types for the chart data
-interface NpsDataItem {
-  month: string;
-  score: number;
-}
-
 // KPI Information components
 interface KPISectionProps {
   title: string;
